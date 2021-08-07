@@ -47,32 +47,35 @@ class HookServiceProvider extends ServiceProvider
     public function renderCustomCssField($article): string
     {
         $slug = $article->slug;
-
+        $path = $this->file();
+        $isWriteable = File::isWritable($path);
         $css = '';
 
-        if ($slug) {
-            $file = $this->file($slug);
+        if ($isWriteable) {
+            Assets::addStylesDirectly([
+                'vendor/core/core/base/libraries/codemirror/lib/codemirror.css',
+                'vendor/core/core/base/libraries/codemirror/addon/hint/show-hint.css',
+                'vendor/core/packages/theme/css/custom-css.css',
+            ])
+                ->addScriptsDirectly([
+                    'vendor/core/core/base/libraries/codemirror/lib/codemirror.js',
+                    'vendor/core/core/base/libraries/codemirror/lib/css.js',
+                    'vendor/core/core/base/libraries/codemirror/addon/hint/show-hint.js',
+                    'vendor/core/core/base/libraries/codemirror/addon/hint/anyword-hint.js',
+                    'vendor/core/core/base/libraries/codemirror/addon/hint/css-hint.js',
+                    'vendor/core/packages/theme/js/custom-css.js',
+                ]);
 
-            if (File::exists($file)) {
-                $css = get_file_data($file, false);
+            if ($slug) {
+                $file = $this->file($slug);
+
+                if (File::exists($file)) {
+                    $css = get_file_data($file, false);
+                }
             }
         }
 
-        Assets::addStylesDirectly([
-            'vendor/core/core/base/libraries/codemirror/lib/codemirror.css',
-            'vendor/core/core/base/libraries/codemirror/addon/hint/show-hint.css',
-            'vendor/core/packages/theme/css/custom-css.css',
-        ])
-            ->addScriptsDirectly([
-                'vendor/core/core/base/libraries/codemirror/lib/codemirror.js',
-                'vendor/core/core/base/libraries/codemirror/lib/css.js',
-                'vendor/core/core/base/libraries/codemirror/addon/hint/show-hint.js',
-                'vendor/core/core/base/libraries/codemirror/addon/hint/anyword-hint.js',
-                'vendor/core/core/base/libraries/codemirror/addon/hint/css-hint.js',
-                'vendor/core/packages/theme/js/custom-css.js',
-            ]);
-
-        return view('plugins/my-style::css-editor', compact('css'))->render();
+        return view('plugins/my-style::css-editor', compact('css', 'isWriteable', 'path'))->render();
     }
 
     /**
@@ -82,7 +85,11 @@ class HookServiceProvider extends ServiceProvider
      */
     public function saveFieldsInFormScreen($type, Request $request, $object)
     {
-        if (my_style_supported($object) && Auth::user()->hasPermission('my-style.root')) {
+        if (
+            my_style_supported($object) &&
+            Auth::user()->hasPermission('my-style.root') &&
+            $request->has('has-my-style')
+        ) {
             $slug   = $request->input('slug');
             $css    = strip_tags($request->input('my_custom_css', ''));
             $file   = $this->file($slug);
@@ -116,6 +123,7 @@ class HookServiceProvider extends ServiceProvider
      */
     protected function file(string $slug = ''): string
     {
-        return public_path(Theme::path() . '/css/'. $slug .'.css');
+        $path = Theme::path() . '/css';
+        return !empty($slug) ?  public_path($path .'/'. $slug .'.css') : $path;
     }
 }

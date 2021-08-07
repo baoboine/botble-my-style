@@ -9,6 +9,6 @@ class Plugin extends PluginOperationAbstract
 {
     public static function remove()
     {
-        
+
     }
 }
