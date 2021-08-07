@@ -1,0 +1,9 @@
+{
+    "name": "MyStyle",
+    "namespace": "Botble\\MyStyle\\",
+    "provider": "Botble\\MyStyle\\Providers\\MyStyleServiceProvider",
+    "author": "Bao Boi",
+    "url": "https://github.com/baoboine/botble-my-style",
+    "version": "1.0",
+    "description": "Custom your article styles"
+}
