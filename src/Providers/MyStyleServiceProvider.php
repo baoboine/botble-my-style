@@ -5,6 +5,8 @@ namespace Botble\MyStyle\Providers;
 use Illuminate\Support\ServiceProvider;
 use Botble\Base\Supports\Helper;
 use Botble\Base\Traits\LoadAndPublishDataTrait;
+use Botble\MyStyle\Facades\MyStyleHelperFacade;
+use Illuminate\Foundation\AliasLoader;
 
 class MyStyleServiceProvider extends ServiceProvider
 {
@@ -13,14 +15,14 @@ class MyStyleServiceProvider extends ServiceProvider
     public function register()
     {
         Helper::autoload(__DIR__ . '/../../helpers');
+        AliasLoader::getInstance()->alias('MyStyleHelper', MyStyleHelperFacade::class);
     }
 
     public function boot()
     {
         $this->setNamespace('plugins/my-style')
             ->loadAndPublishConfigurations(['permissions', 'config'])
-            ->loadAndPublishViews()
-            ->loadRoutes(['web']);
+            ->loadAndPublishViews();
 
         $this->app->booted(function() {
             $this->app->register(HookServiceProvider::class);
