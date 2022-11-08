@@ -1,8 +1,11 @@
 <?php
 
+use Botble\Blog\Models\Post;
+use Botble\Page\Models\Page;
+
 return [
     'supported' => [
-        \Botble\Page\Models\Page::class,
-        \Botble\Blog\Models\Post::class,
-    ]
+        Page::class,
+        Post::class,
+    ],
 ];

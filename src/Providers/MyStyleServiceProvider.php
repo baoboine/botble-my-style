@@ -2,11 +2,11 @@
 
 namespace Botble\MyStyle\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Botble\Base\Supports\Helper;
 use Botble\Base\Traits\LoadAndPublishDataTrait;
 use Botble\MyStyle\Facades\MyStyleHelperFacade;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\ServiceProvider;
 
 class MyStyleServiceProvider extends ServiceProvider
 {
@@ -24,7 +24,7 @@ class MyStyleServiceProvider extends ServiceProvider
             ->loadAndPublishConfigurations(['permissions', 'config'])
             ->loadAndPublishViews();
 
-        $this->app->booted(function() {
+        $this->app->booted(function () {
             $this->app->register(HookServiceProvider::class);
         });
     }

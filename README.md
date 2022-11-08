@@ -6,7 +6,6 @@
 
 This is a plugin for Botble CMS so you have to purchase Botble CMS first to use this plugin.
 
-
 ## Install
 
 - For developers:

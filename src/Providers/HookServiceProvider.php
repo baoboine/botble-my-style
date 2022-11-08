@@ -2,21 +2,22 @@
 
 namespace Botble\MyStyle\Providers;
 
+use Assets;
+use BaseHelper;
+use Botble\Base\Models\BaseModel;
+use File;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Http\Request;
 use MetaBox;
-use Assets;
-use Botble\Base\Models\BaseModel;
 use MyStyleHelper;
 use Theme;
-use File;
 
 class HookServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        add_action(BASE_ACTION_META_BOXES, [$this, 'addMyStyleField'], 9020, 3);
+        add_action(BASE_ACTION_META_BOXES, [$this, 'addMyStyleField'], 50, 2);
         add_action(BASE_ACTION_AFTER_CREATE_CONTENT, [$this, 'saveFieldsInFormScreen'], 75, 3);
         add_action(BASE_ACTION_AFTER_UPDATE_CONTENT, [$this, 'saveFieldsInFormScreen'], 75, 3);
         add_action(BASE_ACTION_AFTER_DELETE_CONTENT, [$this, 'deleteFields'], 75, 3);
@@ -26,7 +27,7 @@ class HookServiceProvider extends ServiceProvider
     }
 
     /**
-     * @param string $context
+     * @param $screen
      * @param Request $request
      * @param BaseModel $object
      */
@@ -35,7 +36,7 @@ class HookServiceProvider extends ServiceProvider
         if (MyStyleHelper::isSupportedModel(get_class($object)) &&
             Auth::user()->hasPermission('my-style.root')) {
             $fileName = $this->fileName($object);
-            $file   = $this->file($fileName);
+            $file = $this->file($fileName);
 
             if (File::exists($file)) {
                 File::delete($file);
@@ -92,7 +93,7 @@ class HookServiceProvider extends ServiceProvider
                 $file = $this->file($fileName);
 
                 if (File::exists($file)) {
-                    $css = get_file_data($file, false);
+                    $css = BaseHelper::getFileData($file, false);
                 }
             }
         }
@@ -113,13 +114,13 @@ class HookServiceProvider extends ServiceProvider
             $request->has('has-my-style')
         ) {
             $fileName = $this->fileName($object);
-            $css    = strip_tags($request->input('my_custom_css', ''));
-            $file   = $this->file($fileName);
+            $css = strip_tags($request->input('my_custom_css', ''));
+            $file = $this->file($fileName);
 
             if (empty($css)) {
                 File::delete($file);
             } else {
-                save_file_data($file, $css, false);
+                BaseHelper::saveFileData($file, $css, false);
             }
         }
     }
@@ -138,7 +139,7 @@ class HookServiceProvider extends ServiceProvider
                 Theme::asset()
                     ->container('after_header')
                     ->usePath()
-                    ->add($fileName . '-my-style', 'css/'. $fileName .'.css', [], [], filectime($file));
+                    ->add($fileName . '-my-style', 'css/' . $fileName . '.css', [], [], filectime($file));
             }
         }
     }
@@ -150,7 +151,8 @@ class HookServiceProvider extends ServiceProvider
     protected function file(string $slug = ''): string
     {
         $path = Theme::path() . '/css';
-        return !empty($slug) ?  public_path($path .'/'. $slug .'.css') : $path;
+
+        return !empty($slug) ? public_path($path . '/' . $slug . '.css') : $path;
     }
 
     /**

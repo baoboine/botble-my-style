@@ -3,7 +3,6 @@
 namespace Botble\MyStyle;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class MyStyleHelper
 {
@@ -25,7 +24,7 @@ class MyStyleHelper
      * @param string | array $model
      * @return $this
      */
-    public function registerModule($model)
+    public function registerModule($model): self
     {
         if (!is_array($model)) {
             $model = [$model];
@@ -49,18 +48,19 @@ class MyStyleHelper
     }
 
     /**
+     * @param string $model
      * @return bool
      */
     public function isSupportedModel(string $model): bool
     {
-        return in_array($model, array_keys($this->supportedModels()));
+        return in_array($model, $this->supportedModels());
     }
 
     /**
      * @param string $model
      * @return $this
      */
-    public function unregisterModule(string $model)
+    public function unregisterModule(string $model): self
     {
         $supported = $this->supportedModels();
 
@@ -79,7 +79,7 @@ class MyStyleHelper
      * @param array $config
      * @return $this
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): self
     {
         $options = array_merge($this->options, $config);
 
@@ -95,7 +95,7 @@ class MyStyleHelper
      * @param mixed $default
      * @return mixed
      */
-    public function config($key = null, $default = null)
+    public function config(?string $key = null, $default = null)
     {
         $options = $this->options;
 

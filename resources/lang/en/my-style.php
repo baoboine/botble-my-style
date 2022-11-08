@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'name'   => 'My styles',
+    'name' => 'My styles',
 ];
